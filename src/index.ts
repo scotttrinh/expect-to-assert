@@ -44,39 +44,30 @@ export default function transformer(file: FileInfo, api: API) {
     .replaceWith((p) => {
       const parsed = ExpectMemberExpressionSchema.parse(p.value);
 
-      if (parsed.callee.property.name === "toBe") {
-        const subject = parsed.callee.object.arguments[0];
-        const expectation = parsed.arguments[0];
+      const subject = parsed.callee.object.arguments[0];
+      const expectation = parsed.arguments[0];
 
+      if (parsed.callee.property.name === "toBe") {
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("equal")),
           [subject, expectation]
         );
       } else if (parsed.callee.property.name === "toEqual") {
-        const subject = parsed.callee.object.arguments[0];
-        const expectation = parsed.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("deepEqual")),
           [subject, expectation]
         );
       } else if (parsed.callee.property.name === "toBeNull") {
-        const subject = parsed.callee.object.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("equal")),
           [subject, j.literal(null)]
         );
       } else if (parsed.callee.property.name === "toBeUndefined") {
-        const subject = parsed.callee.object.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("equal")),
           [subject, j.undefinedLiteral()]
         );
       } else if (parsed.callee.property.name === "toBeDefined") {
-        const subject = parsed.callee.object.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("ok")),
           [subject]
@@ -97,28 +88,17 @@ export default function transformer(file: FileInfo, api: API) {
       },
     })
     .replaceWith((p) => {
-      const result = ExpectNotMemberExpressionSchema.safeParse(p.value);
-      if (!result.success) {
-        const v = p.value as any;
-        console.log("Could not parse expression", v);
-        console.log("callee.object.object: ", v.callee.object.object);
-        console.log("callee.object.property: ", v.callee.object.property);
-        throw result.error;
-      }
-      const { data } = result;
+      const data = ExpectNotMemberExpressionSchema.parse(p.value);
+
+      const subject = data.callee.object.object.arguments[0];
+      const expectation = data.arguments[0];
 
       if (data.callee.property.name === "toBe") {
-        const subject = data.callee.object.object.arguments[0];
-        const expectation = data.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("notEqual")),
           [subject, expectation]
         );
       } else if (data.callee.property.name === "toEqual") {
-        const subject = data.callee.object.object.arguments[0];
-        const expectation = data.arguments[0];
-
         return j.callExpression(
           j.memberExpression(
             j.identifier("assert"),
@@ -130,15 +110,11 @@ export default function transformer(file: FileInfo, api: API) {
         data.callee.property.name === "toBeNull" ||
         data.callee.property.name === "toBeUndefined"
       ) {
-        const subject = data.callee.object.object.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("ok")),
           [subject]
         );
       } else if (data.callee.property.name === "toBeDefined") {
-        const subject = data.callee.object.object.arguments[0];
-
         return j.callExpression(
           j.memberExpression(j.identifier("assert"), j.identifier("notOk")),
           [subject]
