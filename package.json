@@ -13,5 +13,14 @@
     "assert"
   ],
   "author": "Scott Trinh <scott@scotttrinh.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jscodeshift": "^0.11.6",
+    "@types/node": "^20.2.0",
+    "jscodeshift": "^0.15.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "zod": "^3.21.4"
+  }
 }
