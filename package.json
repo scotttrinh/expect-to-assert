@@ -1,0 +1,17 @@
+{
+  "name": "expect-to-assert",
+  "version": "1.0.0",
+  "description": "jscodeshift code mod to convert jest-style expects to assert",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "codemod",
+    "jscodeshift",
+    "expect",
+    "assert"
+  ],
+  "author": "Scott Trinh <scott@scotttrinh.com>",
+  "license": "MIT"
+}
